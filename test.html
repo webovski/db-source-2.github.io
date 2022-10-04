@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src='dist/sql-wasm.js'></script>
+</head>
+<body>
+
+</body>
+<script>
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'input.db', true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = e => {
+        const uInt8Array = new Uint8Array(xhr.response);
+        config = {
+            locateFile: filename => `/dist/${filename}`
+        }
+        initSqlJs(config).then(function(SQL) {
+            const db = new SQL.Database(uInt8Array);
+            const contents = db.exec("SELECT * FROM parsed_users where is_scam = 1");
+            let rows = contents[0].values
+            console.log(rows)
+            for (let i = 0; i < rows.length; i++) {
+                // console.log(rows[i][0]);
+                document.write(rows[i][0])
+                document.write("</br>")
+            }
+        })
+    };
+    xhr.send();
+</script>
+</html>

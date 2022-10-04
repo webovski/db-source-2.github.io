@@ -1,0 +1,27 @@
+<meta charset="utf8"/>
+<html>
+<input type="file" hidden id="local-database" value="input.db">
+<link rel="shortcut icon" type="image/jpg" href="favicon.ico"/>
+<script src='dist/sql-wasm.js'></script>
+<body>
+</body>
+<script>
+    config = {
+        locateFile: filename => `/dist/${filename}`
+    }
+    initSqlJs(config).then(function(SQL){
+        const db = new SQL.Database();
+        db.run("CREATE TABLE test (col1, col2);");
+        db.run("INSERT INTO test VALUES (?,?), (?,?)", [1,111,2,222]);
+
+        const stmt = db.prepare("SELECT * FROM test");
+
+        while(stmt.step()) { //
+            const row = stmt.getAsObject();
+            document.write(`${row.col1}`)
+            document.write("</br>")
+            console.log('Here is a row: ' + JSON.stringify(row));
+        }
+    });
+</script>
+</html>
